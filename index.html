@@ -841,9 +841,7 @@
         showStatus('Files saved. Triggering judging...');
         await notifyBackend(submissionId);
         showStatus(
-          'Success. Submission saved with ID: ' +
-            submissionId +
-            '. Once your backend URL is set, judging will run automatically.'
+          'Great work. And now for the judgement. We'll send you your scores on each question soon!'
         );
         submitBtn.textContent = 'Submitted';
         submitBtn.classList.remove('btn-primary');
