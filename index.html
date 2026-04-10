@@ -17,7 +17,6 @@
 
   <style>
     :root {
-      --bg: #04060a;
       --surface-border: rgba(255, 255, 255, 0.11);
       --text: #f5f7fb;
       --muted: rgba(255, 255, 255, 0.72);
@@ -38,6 +37,7 @@
       background: #000;
       color: var(--text);
       font-family: "Inter", sans-serif;
+      scroll-behavior: smooth;
     }
 
     body {
@@ -88,19 +88,19 @@
     .hero__spotlight {
       position: absolute;
       left: 50%;
-      top: -20px;
+      top: -10px;
       transform: translateX(-50%);
-      width: min(30vw, 340px);
-      height: 72vh;
+      width: min(42vw, 480px);
+      height: 78vh;
       background:
         radial-gradient(
           circle at 50% 0%,
-          rgba(255,255,255,0.28),
-          rgba(255,255,255,0.10) 24%,
-          rgba(255,255,255,0.03) 52%,
+          rgba(255,255,255,0.30),
+          rgba(255,255,255,0.12) 24%,
+          rgba(255,255,255,0.04) 52%,
           transparent 76%
         );
-      filter: blur(16px);
+      filter: blur(18px);
       opacity: 1;
       pointer-events: none;
       z-index: 1;
@@ -109,10 +109,10 @@
     .hero__glow {
       position: absolute;
       left: 50%;
-      top: 300px;
+      top: 410px;
       transform: translateX(-50%);
-      width: min(46vw, 420px);
-      height: 120px;
+      width: min(52vw, 520px);
+      height: 130px;
       border-radius: 999px;
       background: radial-gradient(
         circle,
@@ -121,14 +121,14 @@
         transparent 72%
       );
       filter: blur(18px);
-      opacity: 0.65;
+      opacity: 0.7;
       z-index: 2;
       pointer-events: none;
     }
 
     .hero__corner {
       position: absolute;
-      top: 94px;
+      top: 96px;
       z-index: 9;
       max-width: 150px;
       font-size: 0.78rem;
@@ -151,9 +151,9 @@
     .hero__chairWrap {
       position: absolute;
       left: 50%;
-      top: 132px;
+      top: 120px;
       transform: translateX(-50%);
-      width: min(28vw, 320px);
+      width: min(42vw, 460px);
       z-index: 6;
       display: flex;
       justify-content: center;
@@ -163,55 +163,55 @@
 
     .hero__chair {
       width: 100%;
-      max-width: 320px;
+      max-width: 460px;
       object-fit: contain;
       filter:
-        drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5))
+        drop-shadow(0 28px 36px rgba(0, 0, 0, 0.52))
         drop-shadow(0 0 28px rgba(172, 196, 218, 0.08));
     }
 
     .hero__card {
       position: relative;
       z-index: 12;
-      width: min(100%, 760px);
-      margin: min(62vh, 640px) auto 0;
-      padding: 36px 28px 28px;
-      border-radius: 30px;
+      width: min(100%, 620px);
+      margin: min(74vh, 760px) auto 0;
+      padding: 24px 22px 22px;
+      border-radius: 26px;
       border: 1px solid var(--surface-border);
       background: linear-gradient(
         180deg,
-        rgba(20, 23, 30, 0.82),
-        rgba(8, 10, 14, 0.92)
+        rgba(20, 23, 30, 0.74),
+        rgba(8, 10, 14, 0.88)
       );
       box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       text-align: center;
     }
 
     .hero__headline {
-      margin: 0 0 30px;
-      font-size: clamp(2rem, 4.2vw, 3.9rem);
-      line-height: 0.98;
+      margin: 0 0 20px;
+      font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+      line-height: 1.02;
       letter-spacing: -0.05em;
       font-weight: 760;
       color: #ffffff;
     }
 
     .hero__cta {
-      width: 230px;
-      height: 230px;
+      width: 160px;
+      height: 160px;
       border: 0;
       border-radius: 999px;
       background: var(--button-bg);
       color: var(--button-text);
-      font-size: 1rem;
+      font-size: 0.92rem;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
       box-shadow:
-        0 22px 36px rgba(0, 0, 0, 0.34),
+        0 18px 28px rgba(0, 0, 0, 0.30),
         inset 0 1px 0 rgba(255, 255, 255, 0.55);
       transition: transform 180ms ease, box-shadow 180ms ease;
     }
@@ -219,7 +219,7 @@
     .hero__cta:hover {
       transform: translateY(-2px);
       box-shadow:
-        0 26px 42px rgba(0, 0, 0, 0.38),
+        0 22px 34px rgba(0, 0, 0, 0.34),
         inset 0 1px 0 rgba(255, 255, 255, 0.55);
     }
 
@@ -230,6 +230,39 @@
     .hero__cta:focus-visible {
       outline: 2px solid rgba(255, 255, 255, 0.9);
       outline-offset: 5px;
+    }
+
+    .questions {
+      min-height: 100svh;
+      padding: 48px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #05070c 0%, #0a0d13 100%);
+    }
+
+    .questions__panel {
+      width: min(100%, 720px);
+      padding: 28px 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(18, 21, 28, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      text-align: center;
+    }
+
+    .questions__title {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1;
+    }
+
+    .questions__text {
+      margin: 0;
+      color: rgba(255,255,255,0.72);
+      font-size: 1rem;
+      line-height: 1.5;
     }
 
     @media (max-width: 980px) {
@@ -246,11 +279,11 @@
       }
 
       .hero__chairWrap {
-        width: min(42vw, 280px);
+        width: min(52vw, 360px);
       }
 
       .hero__card {
-        margin-top: 60vh;
+        margin-top: 70vh;
       }
     }
 
@@ -265,9 +298,9 @@
       }
 
       .hero__spotlight {
-        width: 54vw;
-        height: 56vh;
-        top: 4px;
+        width: 72vw;
+        height: 62vh;
+        top: 0;
         filter: blur(12px);
       }
 
@@ -288,53 +321,58 @@
       }
 
       .hero__chairWrap {
-        top: 138px;
-        width: min(58vw, 220px);
+        top: 118px;
+        width: min(78vw, 320px);
       }
 
       .hero__glow {
-        top: 286px;
-        width: 62vw;
-        height: 92px;
-        opacity: 0.5;
+        top: 350px;
+        width: 76vw;
+        height: 96px;
+        opacity: 0.55;
       }
 
       .hero__card {
-        margin-top: 56vh;
-        padding: 24px 18px 22px;
-        border-radius: 24px;
+        width: min(100%, 520px);
+        margin-top: 72vh;
+        padding: 20px 16px 18px;
+        border-radius: 22px;
       }
 
       .hero__headline {
-        margin-bottom: 22px;
-        font-size: clamp(1.7rem, 8.5vw, 2.6rem);
+        margin-bottom: 16px;
+        font-size: clamp(1.2rem, 6.4vw, 1.8rem);
       }
 
       .hero__cta {
-        width: min(58vw, 188px);
-        height: min(58vw, 188px);
-        font-size: 0.92rem;
-        letter-spacing: 0.06em;
+        width: 132px;
+        height: 132px;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
       }
     }
 
     @media (max-width: 430px) {
       .hero__chairWrap {
-        top: 144px;
-        width: min(60vw, 206px);
+        top: 122px;
+        width: min(82vw, 300px);
+      }
+
+      .hero__glow {
+        top: 336px;
       }
 
       .hero__card {
-        margin-top: 58vh;
+        margin-top: 70vh;
       }
 
       .hero__headline {
-        font-size: 1.55rem;
+        font-size: 1.15rem;
       }
 
       .hero__cta {
-        width: 168px;
-        height: 168px;
+        width: 124px;
+        height: 124px;
       }
     }
   </style>
@@ -372,11 +410,20 @@
         <button class="hero__cta" id="takeChairBtn">TAKE THE CHAIR</button>
       </div>
     </section>
+
+    <section id="questions" class="questions">
+      <div class="questions__panel">
+        <h2 class="questions__title">Questions go here</h2>
+        <p class="questions__text">
+          This is now a real target section, so the button visibly moves the user down the page.
+        </p>
+      </div>
+    </section>
   </div>
 
   <script>
     document.getElementById("takeChairBtn").addEventListener("click", function () {
-      window.location.href = "#questions";
+      document.getElementById("questions").scrollIntoView({ behavior: "smooth" });
     });
   </script>
 </body>
