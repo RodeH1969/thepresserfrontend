@@ -1,35 +1,390 @@
-<section class="hero">
-  <div class="hero__spotlight"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Presser</title>
 
-  <header class="hero__header">
-    <h1 class="hero__logo">The Presser</h1>
-  </header>
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
+  <link rel="shortcut icon" href="./assets/favicon.jpg">
 
-  <div class="hero__corner hero__corner--left">
-    Fast answers.<br>
-    Sharp instincts.
-  </div>
-
-  <div class="hero__corner hero__corner--right">
-    Three questions.<br>
-    One chair.
-  </div>
-
-  <img
-    src="./assets/chair.png"
-    alt="The Presser chair under a spotlight"
-    class="hero__chair"
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
   >
 
-  <img
-    src="./assets/udio-static.png"
-    alt=""
-    class="hero__static"
-    aria-hidden="true"
-  >
+  <style>
+    :root {
+      --bg: #04060a;
+      --bg-2: #090d14;
+      --surface: rgba(14, 16, 22, 0.82);
+      --surface-border: rgba(255, 255, 255, 0.11);
+      --text: #f5f7fb;
+      --muted: rgba(255, 255, 255, 0.72);
+      --soft: rgba(255, 255, 255, 0.52);
+      --button-bg: #f5f3ef;
+      --button-text: #101114;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+    }
 
-  <div class="hero__card">
-    <h2 class="hero__headline">Have you got what it takes?</h2>
-    <button class="hero__cta">TAKE THE CHAIR</button>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #000;
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 50% 10%, rgba(138, 165, 192, 0.14), transparent 18%),
+        linear-gradient(180deg, #03050a 0%, #05070c 42%, #03050a 100%);
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      min-height: 100svh;
+      overflow: hidden;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      overflow: hidden;
+      padding: 28px 28px 34px;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(190, 210, 230, 0.08), transparent 22%),
+        linear-gradient(180deg, rgba(6, 9, 14, 0.96) 0%, rgba(4, 6, 10, 1) 100%);
+    }
+
+    .hero__header {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero__logo {
+      margin: 0;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      line-height: 0.92;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: #ffffff;
+    }
+
+    .hero__spotlight {
+      position: absolute;
+      left: 50%;
+      top: -20px;
+      transform: translateX(-50%);
+      width: min(30vw, 340px);
+      height: 72vh;
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(255, 255, 255, 0.28),
+          rgba(255, 255, 255, 0.1) 24%,
+          rgba(255, 255, 255, 0.03) 52%,
+          transparent 76%
+        );
+      filter: blur(16px);
+      opacity: 1;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero__glow {
+      position: absolute;
+      left: 50%;
+      top: 300px;
+      transform: translateX(-50%);
+      width: min(46vw, 420px);
+      height: 120px;
+      border-radius: 999px;
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.22) 0%,
+        rgba(255, 255, 255, 0.06) 42%,
+        transparent 72%
+      );
+      filter: blur(18px);
+      opacity: 0.65;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .hero__corner {
+      position: absolute;
+      top: 94px;
+      z-index: 9;
+      max-width: 150px;
+      font-size: 0.78rem;
+      line-height: 1.25;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero__corner--left {
+      left: 28px;
+      text-align: left;
+    }
+
+    .hero__corner--right {
+      right: 28px;
+      text-align: right;
+    }
+
+    .hero__chairWrap {
+      position: absolute;
+      left: 50%;
+      top: 132px;
+      transform: translateX(-50%);
+      width: min(28vw, 320px);
+      z-index: 6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .hero__chair {
+      width: 100%;
+      max-width: 320px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 24px 34px rgba(0, 0, 0, 0.5))
+        drop-shadow(0 0 28px rgba(172, 196, 218, 0.08));
+    }
+
+    .hero__card {
+      position: relative;
+      z-index: 12;
+      width: min(100%, 760px);
+      margin: min(62vh, 640px) auto 0;
+      padding: 36px 28px 28px;
+      border-radius: 30px;
+      border: 1px solid var(--surface-border);
+      background: linear-gradient(
+        180deg,
+        rgba(20, 23, 30, 0.82),
+        rgba(8, 10, 14, 0.92)
+      );
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      text-align: center;
+    }
+
+    .hero__headline {
+      margin: 0 0 30px;
+      font-size: clamp(2rem, 4.2vw, 3.9rem);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      font-weight: 760;
+      color: #ffffff;
+    }
+
+    .hero__cta {
+      width: 230px;
+      height: 230px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--button-bg);
+      color: var(--button-text);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow:
+        0 22px 36px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .hero__cta:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 26px 42px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    }
+
+    .hero__cta:active {
+      transform: translateY(1px) scale(0.995);
+    }
+
+    .hero__cta:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.9);
+      outline-offset: 5px;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        padding: 24px 20px 28px;
+      }
+
+      .hero__corner--left {
+        left: 18px;
+      }
+
+      .hero__corner--right {
+        right: 18px;
+      }
+
+      .hero__chairWrap {
+        width: min(42vw, 280px);
+      }
+
+      .hero__card {
+        margin-top: 60vh;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        min-height: 100svh;
+        padding: 22px 16px 24px;
+      }
+
+      .hero__logo {
+        font-size: clamp(2.2rem, 8.8vw, 3.5rem);
+      }
+
+      .hero__spotlight {
+        width: 54vw;
+        height: 56vh;
+        top: 4px;
+        filter: blur(12px);
+      }
+
+      .hero__corner {
+        top: 82px;
+        max-width: 104px;
+        font-size: 0.66rem;
+        line-height: 1.2;
+        letter-spacing: 0.1em;
+      }
+
+      .hero__corner--left {
+        left: 12px;
+      }
+
+      .hero__corner--right {
+        right: 12px;
+      }
+
+      .hero__chairWrap {
+        top: 138px;
+        width: min(58vw, 220px);
+      }
+
+      .hero__glow {
+        top: 286px;
+        width: 62vw;
+        height: 92px;
+        opacity: 0.5;
+      }
+
+      .hero__card {
+        margin-top: 56vh;
+        padding: 24px 18px 22px;
+        border-radius: 24px;
+      }
+
+      .hero__headline {
+        margin-bottom: 22px;
+        font-size: clamp(1.7rem, 8.5vw, 2.6rem);
+      }
+
+      .hero__cta {
+        width: min(58vw, 188px);
+        height: min(58vw, 188px);
+        font-size: 0.92rem;
+        letter-spacing: 0.06em;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .hero__chairWrap {
+        top: 144px;
+        width: min(60vw, 206px);
+      }
+
+      .hero__card {
+        margin-top: 58vh;
+      }
+
+      .hero__headline {
+        font-size: 1.55rem;
+      }
+
+      .hero__cta {
+        width: 168px;
+        height: 168px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero__spotlight"></div>
+      <div class="hero__glow"></div>
+
+      <header class="hero__header">
+        <h1 class="hero__logo">The Presser</h1>
+      </header>
+
+      <div class="hero__corner hero__corner--left">
+        Fast answers.<br />
+        Sharp instincts.
+      </div>
+
+      <div class="hero__corner hero__corner--right">
+        Three questions.<br />
+        One chair.
+      </div>
+
+      <div class="hero__chairWrap">
+        <img
+          src="./assets/chair.png"
+          alt="The Presser chair under the spotlight"
+          class="hero__chair"
+        />
+      </div>
+
+      <div class="hero__card">
+        <h2 class="hero__headline">Have you got what it takes?</h2>
+        <button class="hero__cta" id="takeChairBtn">TAKE THE CHAIR</button>
+      </div>
+    </section>
   </div>
-</section>
+
+  <script>
+    document
+      .getElementById("takeChairBtn")
+      .addEventListener("click", function () {
+        window.location.href = "#questions";
+      });
+  </script>
+</body>
+</html>
