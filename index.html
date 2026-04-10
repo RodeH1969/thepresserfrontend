@@ -798,11 +798,23 @@
           resolve();
           return;
         }
-        recorder.onstop = () => {
+
+        const activeRecorder = recorder;
+        recorder = null;
+
+        activeRecorder.onstop = () => {
           const extension = mimeType && mimeType.includes('mp4') ? 'm4a' : 'webm';
           const blob = new Blob(currentChunks, {
             type: mimeType || 'audio/webm'
           });
+
+          if (!blob || blob.size === 0) {
+            console.error('Empty recording blob for question', currentQuestion + 1);
+            currentChunks = [];
+            resolve();
+            return;
+          }
+
           const fileName = 'question-' + (currentQuestion + 1) + '.' + extension;
           const file = new File([blob], fileName, {
             type: blob.type || 'audio/webm'
@@ -821,7 +833,23 @@
           currentChunks = [];
           resolve();
         };
-        recorder.stop();
+
+        try {
+          if (typeof activeRecorder.requestData === 'function') {
+            activeRecorder.requestData();
+          }
+        } catch (e) {
+          console.warn('requestData failed', e);
+        }
+
+        setTimeout(() => {
+          try {
+            activeRecorder.stop();
+          } catch (e) {
+            console.error('Recorder stop failed', e);
+            resolve();
+          }
+        }, 120);
       });
     }
 
@@ -829,13 +857,20 @@
       await initMic();
       currentChunks = [];
       mimeType = chooseMimeType();
+
       recorder = mimeType
         ? new MediaRecorder(micStream, { mimeType })
         : new MediaRecorder(micStream);
+
       recorder.ondataavailable = event => {
         if (event.data && event.data.size > 0) currentChunks.push(event.data);
       };
-      recorder.start();
+
+      recorder.onerror = event => {
+        console.error('MediaRecorder error', event);
+      };
+
+      recorder.start(250);
     }
 
     async function beginQuestion() {
@@ -871,7 +906,9 @@
           await stopRecorderForQuestion();
           currentQuestion += 1;
           if (currentQuestion < questions.length) {
-            await beginQuestion();
+            setTimeout(async () => {
+              await beginQuestion();
+            }, 500);
           } else {
             go('finish');
           }
