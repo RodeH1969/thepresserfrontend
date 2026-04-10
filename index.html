@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Presser</title>
 
-  <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="./assets/favicon.jpg">
   <link rel="shortcut icon" href="./assets/favicon.jpg">
 
-  <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -20,12 +18,9 @@
   <style>
     :root {
       --bg: #04060a;
-      --bg-2: #090d14;
-      --surface: rgba(14, 16, 22, 0.82);
       --surface-border: rgba(255, 255, 255, 0.11);
       --text: #f5f7fb;
       --muted: rgba(255, 255, 255, 0.72);
-      --soft: rgba(255, 255, 255, 0.52);
       --button-bg: #f5f3ef;
       --button-text: #101114;
       --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
@@ -100,9 +95,9 @@
       background:
         radial-gradient(
           circle at 50% 0%,
-          rgba(255, 255, 255, 0.28),
-          rgba(255, 255, 255, 0.1) 24%,
-          rgba(255, 255, 255, 0.03) 52%,
+          rgba(255,255,255,0.28),
+          rgba(255,255,255,0.10) 24%,
+          rgba(255,255,255,0.03) 52%,
           transparent 76%
         );
       filter: blur(16px);
@@ -121,8 +116,8 @@
       border-radius: 999px;
       background: radial-gradient(
         circle,
-        rgba(255, 255, 255, 0.22) 0%,
-        rgba(255, 255, 255, 0.06) 42%,
+        rgba(255,255,255,0.22) 0%,
+        rgba(255,255,255,0.06) 42%,
         transparent 72%
       );
       filter: blur(18px);
@@ -355,18 +350,18 @@
       </header>
 
       <div class="hero__corner hero__corner--left">
-        Fast answers.<br />
+        Fast answers.<br>
         Sharp instincts.
       </div>
 
       <div class="hero__corner hero__corner--right">
-        Three questions.<br />
+        Three questions.<br>
         One chair.
       </div>
 
       <div class="hero__chairWrap">
         <img
-          src="./assets/chair.png"
+          src="./assets/thepressserchair.jpg"
           alt="The Presser chair under the spotlight"
           class="hero__chair"
         />
@@ -380,11 +375,9 @@
   </div>
 
   <script>
-    document
-      .getElementById("takeChairBtn")
-      .addEventListener("click", function () {
-        window.location.href = "#questions";
-      });
+    document.getElementById("takeChairBtn").addEventListener("click", function () {
+      window.location.href = "#questions";
+    });
   </script>
 </body>
 </html>
