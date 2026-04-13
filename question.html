@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Presser - Question</title>
+
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.6rem, 1.1rem + 2vw, 2.7rem);
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --color-text: #f8fbff;
+      --color-text-muted: rgba(248,251,255,0.78);
+      --color-text-faint: rgba(248,251,255,0.5);
+      --color-border: rgba(255,255,255,0.14);
+      --color-danger: #ff5f5f;
+      --color-success: #7bd88f;
+      --radius-md: 0.9rem;
+      --radius-lg: 1.25rem;
+      --radius-full: 9999px;
+      --font-body: 'Satoshi', Inter, sans-serif;
+      --transition: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      font-family: var(--font-body);
+      background: #05070b;
+      color: var(--color-text);
+    }
+
+    .app {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.82)),
+        url('./assets/thepressserchair.jpg') center center / cover no-repeat;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: var(--space-4);
+    }
+
+    .panel {
+      width: min(720px, 100%);
+      display: grid;
+      gap: var(--space-5);
+      padding: clamp(var(--space-5), 2vw, var(--space-8));
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      color: var(--color-text-faint);
+    }
+
+    .title {
+      font-size: var(--text-xl);
+      font-weight: 800;
+      line-height: 1.08;
+      margin: 0;
+    }
+
+    .question-text {
+      font-size: clamp(1.15rem, 0.95rem + 1.2vw, 1.8rem);
+      line-height: 1.18;
+      font-weight: 700;
+      margin: 0 auto;
+      max-width: 24ch;
+    }
+
+    .copy {
+      font-size: var(--text-base);
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      max-width: 42ch;
+      margin: 0 auto;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-width: 170px;
+      min-height: 52px;
+      padding: 0 var(--space-6);
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      transition: transform var(--transition), opacity var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: #fff;
+      color: #05070b;
+    }
+
+    .hidden { display: none !important; }
+
+    .timer {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 88px;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      font-weight: 800;
+      font-size: var(--text-lg);
+      margin: 0 auto;
+      transition: color var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    }
+
+    .timer.timer-warning {
+      background: rgba(255, 77, 77, 0.16);
+      border-color: rgba(255, 77, 77, 0.55);
+      color: #ff6b6b;
+      box-shadow: 0 0 0 1px rgba(255, 77, 77, 0.18), 0 0 22px rgba(255, 77, 77, 0.18);
+    }
+
+    .timer.timer-danger {
+      background: rgba(255, 40, 40, 0.22);
+      border-color: rgba(255, 40, 40, 0.75);
+      color: #ff3b3b;
+      box-shadow: 0 0 0 1px rgba(255, 40, 40, 0.22), 0 0 28px rgba(255, 40, 40, 0.28);
+    }
+
+    .status {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      min-height: 1.5em;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--color-text-muted);
+      margin: 0 auto;
+    }
+
+    .pill.recording::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-danger);
+    }
+
+    .form {
+      width: min(460px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: var(--space-4);
+      text-align: left;
+    }
+
+    .field {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .field label {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      color: var(--color-text-faint);
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 var(--space-4);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      color: #fff;
+      font: inherit;
+    }
+
+    .field input::placeholder {
+      color: rgba(255,255,255,.35);
+    }
+
+    .preview {
+      width: min(460px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: var(--space-3);
+    }
+
+    audio {
+      width: 100%;
+      height: 42px;
+    }
+
+    .message {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+
+    .message.success { color: var(--color-success); }
+    .message.error { color: var(--color-danger); }
+
+    @media (max-width: 640px) {
+      .panel { padding: var(--space-4); }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      .btn { width: 100%; min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="bg"></div>
+
+    <main class="shell">
+      <section class="panel">
+        <div id="introBlock">
+          <div class="eyebrow" id="eyebrow">Round 1</div>
+          <h1 class="title" id="pageTitle">Question 1. Are you ready?</h1>
+          <p class="copy" id="introCopy">
+            Record your answer. If you score above 20 out of 33, we will email you your Question 2 link.
+          </p>
+
+          <div id="introScreen">
+            <div class="actions">
+              <button class="btn btn-primary" id="playBtn">Play</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="recordScreen" class="hidden">
+          <p class="question-text" id="questionText"></p>
+          <div class="pill recording">Recording live</div>
+          <div class="timer" id="timer">25s</div>
+          <div class="status" id="statusText">Recording has started.</div>
+        </div>
+
+        <div id="reviewScreen" class="hidden">
+          <p class="copy">Your answer has been recorded. Enter your details below to submit this round.</p>
+
+          <div class="preview">
+            <audio id="answerPlayer" controls></audio>
+            <div class="message" id="recordingMeta"></div>
+          </div>
+
+          <div class="form">
+            <div class="field">
+              <label for="tagName">Tag name</label>
+              <input id="tagName" placeholder="Tag name" />
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" type="email" placeholder="Email address" />
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" id="submitBtn" type="button">Submit answer</button>
+            </div>
+
+            <div class="message" id="submitMessage"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://uewabjbwqibawngglhij.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_GLBXIg_lipdkrDJpY7An4g_fhVQA8-c';
+    const SUPABASE_BUCKET = 'recordings';
+    const RECORDING_SECONDS = 25;
+
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const params = new URLSearchParams(window.location.search);
+    const round = Number(params.get('round') || '1');
+    const token = params.get('token') || '';
+    const presetEmail = params.get('email') || '';
+    const submissionId = params.get('submission_id') || '';
+
+    const rounds = {
+      1: {
+        pageTitle: 'Question 1. Are you ready?',
+        intro: 'Record your answer. If you score above 20 out of 33, we will email you your Question 2 link.',
+        question: 'Fuel costs are soaring in servos across Australia. Explain what is happening.',
+        audio: './assets/fuel costs.mp3'
+      },
+      2: {
+        pageTitle: 'Question 2. Are you ready?',
+        intro: 'This is your second shot. Deliver a score above 20 out of 33 to advance.',
+        question: 'Give a definition and also use in a sentence the word "immutable".',
+        audio: './assets/immutable.mp3'
+      },
+      3: {
+        pageTitle: 'Question 3. Are you ready?',
+        intro: 'One more answer. Clear this round and you earn your place on the Legends Board.',
+        question: "Scrambled eggs. What's the secret to great scrambled eggs?",
+        audio: './assets/scrambled eggs.mp3'
+      }
+    };
+
+    const current = rounds[round] || rounds[1];
+
+    const playBtn = document.getElementById('playBtn');
+    const introBlock = document.getElementById('introBlock');
+    const recordScreen = document.getElementById('recordScreen');
+    const reviewScreen = document.getElementById('reviewScreen');
+    const pageTitle = document.getElementById('pageTitle');
+    const introCopy = document.getElementById('introCopy');
+    const eyebrow = document.getElementById('eyebrow');
+    const questionText = document.getElementById('questionText');
+    const timerEl = document.getElementById('timer');
+    const statusText = document.getElementById('statusText');
+    const answerPlayer = document.getElementById('answerPlayer');
+    const recordingMeta = document.getElementById('recordingMeta');
+    const tagNameInput = document.getElementById('tagName');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitMessage = document.getElementById('submitMessage');
+
+    pageTitle.textContent = current.pageTitle;
+    introCopy.textContent = current.intro;
+    eyebrow.textContent = 'Round ' + round;
+    questionText.textContent = current.question;
+    emailInput.value = presetEmail;
+    timerEl.textContent = RECORDING_SECONDS + 's';
+
+    const promptAudio = new Audio();
+    promptAudio.preload = 'auto';
+
+    let micStream = null;
+    let recorder = null;
+    let currentChunks = [];
+    let mimeType = '';
+    let recordedFile = null;
+    let recordedUrl = '';
+    let secondsLeft = RECORDING_SECONDS;
+    let countdown = null;
+
+    async function initMic() {
+      if (micStream) return micStream;
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      return micStream;
+    }
+
+    function chooseMimeType() {
+      const options = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
+      if (!window.MediaRecorder) return '';
+      return options.find(t => MediaRecorder.isTypeSupported(t)) || '';
+    }
+
+    function setMessage(text, type = '') {
+      submitMessage.textContent = text;
+      submitMessage.className = 'message' + (type ? ' ' + type : '');
+    }
+
+    function updateTimerState(seconds) {
+      timerEl.classList.remove('timer-warning', 'timer-danger');
+
+      if (seconds <= 5) {
+        timerEl.classList.add('timer-danger');
+      } else if (seconds <= 10) {
+        timerEl.classList.add('timer-warning');
+      }
+    }
+
+    function resetRecordingState() {
+      if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+      recordedUrl = '';
+      recordedFile = null;
+      answerPlayer.removeAttribute('src');
+      answerPlayer.load();
+      recordingMeta.textContent = '';
+      setMessage('');
+      timerEl.classList.remove('timer-warning', 'timer-danger');
+      timerEl.textContent = RECORDING_SECONDS + 's';
+    }
+
+    async function playPromptFirst() {
+      promptAudio.pause();
+      promptAudio.currentTime = 0;
+      promptAudio.src = current.audio;
+
+      try {
+        await new Promise((resolve, reject) => {
+          promptAudio.onended = () => resolve();
+          promptAudio.onerror = () => reject(new Error('Prompt audio failed'));
+          const p = promptAudio.play();
+          if (p && typeof p.then === 'function') {
+            p.catch(reject);
+          }
+        });
+      } catch (error) {
+        if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(current.question);
+          utter.rate = 0.96;
+          utter.pitch = 0.92;
+          speechSynthesis.speak(utter);
+          await new Promise(resolve => setTimeout(resolve, 4000));
+        }
+      }
+    }
+
+    async function startRecorder() {
+      await initMic();
+      currentChunks = [];
+      mimeType = chooseMimeType();
+
+      recorder = mimeType
+        ? new MediaRecorder(micStream, { mimeType })
+        : new MediaRecorder(micStream);
+
+      recorder.ondataavailable = event => {
+        if (event.data && event.data.size > 0) {
+          currentChunks.push(event.data);
+        }
+      };
+
+      recorder.onerror = event => {
+        console.error('MediaRecorder error', event);
+        statusText.textContent = 'Recording error. Please try again.';
+      };
+
+      recorder.start(250);
+    }
+
+    function stopRecorder() {
+      return new Promise(resolve => {
+        if (!recorder || recorder.state === 'inactive') {
+          resolve();
+          return;
+        }
+
+        const activeRecorder = recorder;
+        recorder = null;
+
+        activeRecorder.onstop = () => {
+          const extension = mimeType && mimeType.includes('mp4') ? 'm4a' : 'webm';
+          const blob = new Blob(currentChunks, { type: mimeType || 'audio/webm' });
+
+          if (!blob || blob.size === 0) {
+            statusText.textContent = 'No recording was captured. Please try again.';
+            resolve();
+            return;
+          }
+
+          const fileName = `round-${round}.${extension}`;
+          recordedFile = new File([blob], fileName, {
+            type: blob.type || 'audio/webm'
+          });
+
+          recordedUrl = URL.createObjectURL(blob);
+          answerPlayer.src = recordedUrl;
+          recordingMeta.textContent = fileName;
+          resolve();
+        };
+
+        try {
+          if (typeof activeRecorder.requestData === 'function') {
+            activeRecorder.requestData();
+          }
+        } catch (e) {
+          console.warn('requestData failed', e);
+        }
+
+        setTimeout(() => {
+          try {
+            activeRecorder.stop();
+          } catch (e) {
+            console.error('Recorder stop failed', e);
+            resolve();
+          }
+        }, 120);
+      });
+    }
+
+    async function runRecordingFlow() {
+      try {
+        resetRecordingState();
+        introBlock.classList.add('hidden');
+        reviewScreen.classList.add('hidden');
+        recordScreen.classList.remove('hidden');
+
+        statusText.textContent = 'Listen carefully...';
+        await playPromptFirst();
+
+        statusText.textContent = 'Recording has started.';
+        secondsLeft = RECORDING_SECONDS;
+        timerEl.textContent = RECORDING_SECONDS + 's';
+        updateTimerState(secondsLeft);
+
+        await startRecorder();
+
+        clearInterval(countdown);
+        countdown = setInterval(async () => {
+          secondsLeft -= 1;
+          timerEl.textContent = secondsLeft + 's';
+          updateTimerState(secondsLeft);
+
+          if (secondsLeft <= 0) {
+            clearInterval(countdown);
+            timerEl.textContent = '0s';
+            updateTimerState(0);
+            statusText.textContent = 'Saving your answer...';
+            await stopRecorder();
+            recordScreen.classList.add('hidden');
+            reviewScreen.classList.remove('hidden');
+          }
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        alert('Microphone access is required. Please allow microphone access and try again.');
+        recordScreen.classList.add('hidden');
+        introBlock.classList.remove('hidden');
+      }
+    }
+
+    async function saveRoundSubmission() {
+      const tag = tagNameInput.value.trim();
+      const email = emailInput.value.trim();
+
+      if (!tag || !email) {
+        setMessage('Please enter tag name and email.', 'error');
+        return;
+      }
+
+      if (!recordedFile) {
+        setMessage('Please record your answer first.', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      setMessage('Uploading your answer...');
+
+      try {
+        const { data: contestant, error: contestantError } = await db
+          .from('contestants')
+          .upsert(
+            {
+              tag_name: tag,
+              email: email,
+              status: 'active'
+            },
+            { onConflict: 'email' }
+          )
+          .select()
+          .single();
+
+        if (contestantError) throw contestantError;
+
+        const fileExt = recordedFile.name.split('.').pop();
+        const path = `round-submissions/${contestant.id}/round-${round}.${fileExt}`;
+
+        const { error: uploadError } = await db
+          .storage
+          .from(SUPABASE_BUCKET)
+          .upload(path, recordedFile, {
+            contentType: recordedFile.type || 'audio/webm',
+            upsert: true
+          });
+
+        if (uploadError) throw uploadError;
+
+        const attemptPayload = {
+          contestant_id: contestant.id,
+          round_number: round,
+          token: token || null,
+          recording_path: path,
+          status: 'pending_judging'
+        };
+
+        if (submissionId) {
+          attemptPayload.submission_id = submissionId;
+        }
+
+        const { error: attemptError } = await db
+          .from('attempts')
+          .insert(attemptPayload);
+
+        if (attemptError) throw attemptError;
+
+        const nextUrl = new URL('./submitted.html', window.location.href);
+        nextUrl.searchParams.set('round', String(round));
+        nextUrl.searchParams.set('email', email);
+
+        if (submissionId) {
+          nextUrl.searchParams.set('submission_id', submissionId);
+        }
+
+        window.location.href = nextUrl.toString();
+      } catch (error) {
+        console.error(error);
+
+        const isOneTryOnlyError =
+          error &&
+          (
+            error.code === '23505' ||
+            String(error.message || '').includes('attempts_one_round_per_contestant')
+          );
+
+        if (isOneTryOnlyError) {
+          setMessage("Sorry but only 1 try at each question for today's game!", 'error');
+        } else {
+          setMessage(error.message || 'Submission failed.', 'error');
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit answer';
+      }
+    }
+
+    playBtn.addEventListener('click', runRecordingFlow);
+    submitBtn.addEventListener('click', saveRoundSubmission);
+
+    window.addEventListener('beforeunload', () => {
+      promptAudio.pause();
+      if (micStream) micStream.getTracks().forEach(track => track.stop());
+      if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+      clearInterval(countdown);
+      if ('speechSynthesis' in window) speechSynthesis.cancel();
+    });
+  </script>
+</body>
+</html>
