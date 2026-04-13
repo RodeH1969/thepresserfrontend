@@ -630,18 +630,37 @@
           attemptPayload.submission_id = submissionId;
         }
 
-        const { error: attemptError } = await db
+        const { data: insertedAttempt, error: attemptError } = await db
           .from('attempts')
-          .insert(attemptPayload);
+          .insert(attemptPayload)
+          .select()
+          .single();
 
         if (attemptError) throw attemptError;
+
+        const createdSubmissionId =
+          insertedAttempt?.submission_id ||
+          submissionId ||
+          insertedAttempt?.id;
+
+        if (createdSubmissionId) {
+          await fetch('https://presserbackend.onrender.com/judge-submission', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              submissionId: createdSubmissionId
+            })
+          });
+        }
 
         const nextUrl = new URL('./submitted.html', window.location.href);
         nextUrl.searchParams.set('round', String(round));
         nextUrl.searchParams.set('email', email);
 
-        if (submissionId) {
-          nextUrl.searchParams.set('submission_id', submissionId);
+        if (createdSubmissionId) {
+          nextUrl.searchParams.set('submission_id', createdSubmissionId);
         }
 
         window.location.href = nextUrl.toString();
