@@ -667,18 +667,7 @@
       } catch (error) {
         console.error(error);
 
-        const isOneTryOnlyError =
-          error &&
-          (
-            error.code === '23505' ||
-            String(error.message || '').includes('attempts_one_round_per_contestant')
-          );
-
-        if (isOneTryOnlyError) {
-          setMessage("Sorry but only 1 try at each question for today's game!", 'error');
-        } else {
-          setMessage(error.message || 'Submission failed.', 'error');
-        }
+        setMessage(error.message || 'Submission failed.', 'error');
 
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit answer';
