@@ -331,7 +331,6 @@
     const round = Number(params.get('round') || '1');
     const token = params.get('token') || '';
     const presetEmail = params.get('email') || '';
-    const submissionId = params.get('submission_id') || '';
 
     const rounds = {
       1: {
@@ -626,10 +625,6 @@
           status: 'pending_judging'
         };
 
-        if (submissionId) {
-          attemptPayload.submission_id = submissionId;
-        }
-
         const { data: insertedAttempt, error: attemptError } = await db
           .from('attempts')
           .insert(attemptPayload)
@@ -638,37 +633,31 @@
 
         if (attemptError) throw attemptError;
 
-        const createdSubmissionId =
-          insertedAttempt?.submission_id ||
-          submissionId ||
-          insertedAttempt?.id;
+        const attemptId = insertedAttempt.id;
 
-        if (createdSubmissionId) {
+        try {
           await fetch('https://presserbackend.onrender.com/judge-submission', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              submissionId: createdSubmissionId
+              attemptId: attemptId
             })
           });
+        } catch (judgeError) {
+          console.error('Judge trigger failed', judgeError);
         }
 
         const nextUrl = new URL('./submitted.html', window.location.href);
         nextUrl.searchParams.set('round', String(round));
         nextUrl.searchParams.set('email', email);
-
-        if (createdSubmissionId) {
-          nextUrl.searchParams.set('submission_id', createdSubmissionId);
-        }
+        nextUrl.searchParams.set('submission_id', attemptId);
 
         window.location.href = nextUrl.toString();
       } catch (error) {
         console.error(error);
-
         setMessage(error.message || 'Submission failed.', 'error');
-
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit answer';
       }
