@@ -127,7 +127,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: transform var(--transition), opacity var(--transition), background var(--transition);
+      transition: transform var(--transition), opacity var(--transition), background var(--transition), color var(--transition);
       cursor: pointer;
     }
 
@@ -154,6 +154,11 @@
       backdrop-filter: blur(10px);
     }
 
+    .empty-media {
+      display: grid;
+      gap: var(--space-4);
+    }
+
     .empty-video {
       width: 100%;
       max-height: 320px;
@@ -161,6 +166,11 @@
       object-fit: cover;
       border: 1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
+    }
+
+    .video-actions {
+      display: flex;
+      justify-content: center;
     }
 
     .leader-wrap {
@@ -363,6 +373,18 @@
       .btn {
         width: 100%;
       }
+
+      .empty-video {
+        max-height: 240px;
+      }
+
+      .video-actions {
+        width: 100%;
+      }
+
+      .video-actions .btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -387,9 +409,15 @@
       </header>
 
       <section class="hero-card">
-        <video id="emptyVideo" class="empty-video hidden" autoplay muted loop playsinline>
-  <source src="./assets/legendslounge.mp4" type="video/mp4">
-</video>
+        <div id="emptyMedia" class="empty-media hidden">
+          <video id="emptyVideo" class="empty-video" autoplay muted loop playsinline>
+            <source src="./assets/legendslounge.mp4" type="video/mp4">
+          </video>
+
+          <div class="video-actions">
+            <button id="soundToggleBtn" class="btn btn-secondary" type="button">Turn sound on</button>
+          </div>
+        </div>
 
         <div class="leader-wrap">
           <div class="leader-grid">
@@ -444,7 +472,10 @@
     const errorState = document.getElementById('errorState');
     const emptyState = document.getElementById('emptyState');
     const boardRows = document.getElementById('boardRows');
+
+    const emptyMedia = document.getElementById('emptyMedia');
     const emptyVideo = document.getElementById('emptyVideo');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
 
     const championName = document.getElementById('championName');
     const championScore = document.getElementById('championScore');
@@ -470,6 +501,10 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
+    }
+
+    function setSoundButtonLabel() {
+      soundToggleBtn.textContent = emptyVideo.muted ? 'Turn sound on' : 'Mute sound';
     }
 
     function renderChampion(row) {
@@ -503,7 +538,10 @@
       errorState.classList.add('hidden');
       emptyState.classList.add('hidden');
       boardRows.innerHTML = '';
-      emptyVideo.classList.add('hidden');
+      emptyMedia.classList.add('hidden');
+      emptyVideo.muted = true;
+      emptyVideo.currentTime = 0;
+      setSoundButtonLabel();
 
       const { data, error } = await db
         .from('legends_public')
@@ -525,7 +563,9 @@
 
       if (!data || data.length === 0) {
         emptyState.classList.remove('hidden');
-        emptyVideo.classList.remove('hidden');
+        emptyMedia.classList.remove('hidden');
+        emptyVideo.muted = true;
+        setSoundButtonLabel();
         emptyVideo.play().catch(() => {});
         renderChampion(null);
         legendCount.textContent = '0';
@@ -538,6 +578,17 @@
       legendCount.textContent = String(data.length);
       topScore.textContent = `${data[0].total_score} / 99`;
     }
+
+    soundToggleBtn.addEventListener('click', async () => {
+      try {
+        emptyVideo.muted = !emptyVideo.muted;
+        emptyVideo.volume = 1;
+        await emptyVideo.play();
+        setSoundButtonLabel();
+      } catch (error) {
+        console.error('Could not toggle video sound', error);
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', loadLegends);
   </script>
