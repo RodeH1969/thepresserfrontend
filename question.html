@@ -635,17 +635,19 @@
 
         const attemptId = insertedAttempt.id;
 
-        fetch('https://presserbackend.onrender.com/judge-submission', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            attemptId: attemptId
-          })
-        }).catch(judgeError => {
+        // Await the judge trigger so mobile browsers don't cancel it on redirect
+        try {
+          await fetch('https://presserbackend.onrender.com/judge-submission', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ attemptId })
+          });
+        } catch (judgeError) {
           console.error('Judge trigger failed', judgeError);
-        });
+          // We still redirect; backend might retry based on DB state.
+        }
 
         const nextUrl = new URL('./submitted.html', window.location.href);
         nextUrl.searchParams.set('round', String(round));
