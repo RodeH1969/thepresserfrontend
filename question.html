@@ -635,19 +635,17 @@
 
         const attemptId = insertedAttempt.id;
 
-        try {
-          await fetch('https://presserbackend.onrender.com/judge-submission', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              attemptId: attemptId
-            })
-          });
-        } catch (judgeError) {
+        fetch('https://presserbackend.onrender.com/judge-submission', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            attemptId: attemptId
+          })
+        }).catch(judgeError => {
           console.error('Judge trigger failed', judgeError);
-        }
+        });
 
         const nextUrl = new URL('./submitted.html', window.location.href);
         nextUrl.searchParams.set('round', String(round));
