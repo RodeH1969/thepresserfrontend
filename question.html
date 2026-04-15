@@ -27,6 +27,7 @@
       --color-border: rgba(255,255,255,0.14);
       --color-danger: #ff5f5f;
       --color-success: #7bd88f;
+      --color-gold: #f5d36b;
       --radius-md: 0.9rem;
       --radius-lg: 1.25rem;
       --radius-full: 9999px;
@@ -76,6 +77,8 @@
       border-radius: var(--radius-lg);
       backdrop-filter: blur(10px);
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
     .eyebrow {
@@ -125,7 +128,7 @@
       font-weight: 700;
       letter-spacing: .04em;
       text-transform: uppercase;
-      transition: transform var(--transition), opacity var(--transition);
+      transition: transform var(--transition), opacity var(--transition), background var(--transition);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -254,10 +257,148 @@
     .message.success { color: var(--color-success); }
     .message.error { color: var(--color-danger); }
 
+    .submit-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-5);
+      background: rgba(5, 7, 11, 0.92);
+      backdrop-filter: blur(8px);
+    }
+
+    .submit-card {
+      width: min(420px, 100%);
+      display: grid;
+      gap: var(--space-4);
+      justify-items: center;
+      text-align: center;
+      padding: var(--space-6);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+    }
+
+    .submit-title {
+      margin: 0;
+      font-size: var(--text-lg);
+      font-weight: 800;
+      color: var(--color-text);
+    }
+
+    .submit-copy {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      max-width: 28ch;
+    }
+
+    .hourglass {
+      position: relative;
+      width: 74px;
+      height: 110px;
+      filter: drop-shadow(0 8px 22px rgba(245, 211, 107, 0.12));
+    }
+
+    .hourglass-frame {
+      position: absolute;
+      inset: 0;
+      border: 3px solid rgba(245, 211, 107, 0.85);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .hourglass-neck {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      transform: translate(-50%, -50%) rotate(45deg);
+      background: rgba(245, 211, 107, 0.92);
+      border-radius: 2px;
+      z-index: 2;
+    }
+
+    .sand-top,
+    .sand-bottom {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      background: linear-gradient(180deg, rgba(245, 211, 107, 0.95), rgba(255, 236, 179, 0.82));
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .sand-top {
+      top: 10px;
+      height: 34px;
+      animation: topSand 2.4s linear infinite;
+      transform-origin: center top;
+    }
+
+    .sand-bottom {
+      bottom: 10px;
+      height: 18px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      animation: bottomSand 2.4s linear infinite;
+      transform-origin: center bottom;
+    }
+
+    .sand-stream {
+      position: absolute;
+      left: 50%;
+      top: 34px;
+      width: 4px;
+      height: 42px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, rgba(255, 236, 179, 0), rgba(245, 211, 107, 0.95), rgba(255, 236, 179, 0));
+      border-radius: 999px;
+      animation: sandStream 2.4s linear infinite;
+      z-index: 3;
+    }
+
+    .submit-stage {
+      min-height: 1.6em;
+      font-size: var(--text-sm);
+      color: var(--color-gold);
+      letter-spacing: .02em;
+    }
+
+    @keyframes topSand {
+      0% { transform: translateX(-50%) scaleY(1); opacity: 1; }
+      85% { transform: translateX(-50%) scaleY(0.18); opacity: 0.95; }
+      100% { transform: translateX(-50%) scaleY(1); opacity: 1; }
+    }
+
+    @keyframes bottomSand {
+      0% { transform: translateX(-50%) scaleY(0.35); opacity: 0.95; }
+      85% { transform: translateX(-50%) scaleY(1); opacity: 1; }
+      100% { transform: translateX(-50%) scaleY(0.35); opacity: 0.95; }
+    }
+
+    @keyframes sandStream {
+      0%, 15% { opacity: 0; }
+      22%, 82% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sand-top,
+      .sand-bottom,
+      .sand-stream {
+        animation: none;
+      }
+    }
+
     @media (max-width: 640px) {
       .panel { padding: var(--space-4); }
       .actions { display: grid; grid-template-columns: 1fr; }
       .btn { width: 100%; min-width: 0; }
+      .submit-card { padding: var(--space-5); }
     }
   </style>
 </head>
@@ -267,6 +408,22 @@
 
     <main class="shell">
       <section class="panel">
+        <div id="submitOverlay" class="submit-overlay hidden" aria-live="polite" aria-busy="true">
+          <div class="submit-card">
+            <div class="hourglass" aria-hidden="true">
+              <div class="hourglass-frame"></div>
+              <div class="hourglass-neck"></div>
+              <div class="sand-top"></div>
+              <div class="sand-stream"></div>
+              <div class="sand-bottom"></div>
+            </div>
+
+            <h2 class="submit-title">Submitting your answer</h2>
+            <p class="submit-copy">Please stay on this page while we process your recording.</p>
+            <div class="submit-stage" id="submitStageText">Uploading your answer...</div>
+          </div>
+        </div>
+
         <div id="introBlock">
           <div class="eyebrow" id="eyebrow">Round 1</div>
           <h1 class="title" id="pageTitle">Question 1. Are you ready?</h1>
@@ -371,6 +528,8 @@
     const emailInput = document.getElementById('email');
     const submitBtn = document.getElementById('submitBtn');
     const submitMessage = document.getElementById('submitMessage');
+    const submitOverlay = document.getElementById('submitOverlay');
+    const submitStageText = document.getElementById('submitStageText');
 
     pageTitle.textContent = current.pageTitle;
     introCopy.textContent = current.intro;
@@ -406,6 +565,19 @@
     function setMessage(text, type = '') {
       submitMessage.textContent = text;
       submitMessage.className = 'message' + (type ? ' ' + type : '');
+    }
+
+    function showSubmitOverlay(stageText) {
+      submitStageText.textContent = stageText;
+      submitOverlay.classList.remove('hidden');
+    }
+
+    function updateSubmitOverlay(stageText) {
+      submitStageText.textContent = stageText;
+    }
+
+    function hideSubmitOverlay() {
+      submitOverlay.classList.add('hidden');
     }
 
     function updateTimerState(seconds) {
@@ -586,7 +758,8 @@
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
-      setMessage('Uploading your answer...');
+      setMessage('');
+      showSubmitOverlay('Uploading your answer...');
 
       try {
         const { data: contestant, error: contestantError } = await db
@@ -617,6 +790,8 @@
 
         if (uploadError) throw uploadError;
 
+        updateSubmitOverlay('Saving your submission...');
+
         const attemptPayload = {
           contestant_id: contestant.id,
           round_number: round,
@@ -635,18 +810,18 @@
 
         const attemptId = insertedAttempt.id;
 
-        // Await the judge trigger so mobile browsers don't cancel it on redirect
-        try {
-          await fetch('https://presserbackend.onrender.com/judge-submission', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ attemptId })
-          });
-        } catch (judgeError) {
-          console.error('Judge trigger failed', judgeError);
-          // We still redirect; backend might retry based on DB state.
+        updateSubmitOverlay('Our 3 judges are critiquing your performance as we wait...');
+
+        const judgeResponse = await fetch('https://presserbackend.onrender.com/judge-submission', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ attemptId })
+        });
+
+        if (!judgeResponse.ok) {
+          throw new Error('Judge trigger failed.');
         }
 
         const nextUrl = new URL('./submitted.html', window.location.href);
@@ -657,6 +832,7 @@
         window.location.href = nextUrl.toString();
       } catch (error) {
         console.error(error);
+        hideSubmitOverlay();
         setMessage(error.message || 'Submission failed.', 'error');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit answer';
