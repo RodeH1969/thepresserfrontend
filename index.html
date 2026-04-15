@@ -28,11 +28,14 @@
 
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
+
     body {
       font-family: var(--font-body);
       background: #05070b;
       color: var(--color-text);
     }
+
+    .hidden { display: none !important; }
 
     .app {
       min-height: 100vh;
@@ -118,8 +121,15 @@
       line-height: 1.6;
     }
 
+    .actions {
+      width: 100%;
+      display: grid;
+      gap: var(--space-3);
+      justify-items: center;
+    }
+
     .btn {
-      min-width: 190px;
+      min-width: 220px;
       min-height: 52px;
       padding: 0 var(--space-6);
       border: none;
@@ -128,16 +138,32 @@
       font-weight: 700;
       letter-spacing: .04em;
       text-transform: uppercase;
-      background: #fff;
-      color: #05070b;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: transform var(--transition);
+      transition: transform var(--transition), opacity var(--transition);
+      cursor: pointer;
     }
 
     .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: #fff;
+      color: #05070b;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid var(--color-border);
+    }
+
+    .status {
+      min-height: 1.5em;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
 
     @media (max-width: 920px) {
       .shell { grid-template-columns: 1fr; }
@@ -152,15 +178,18 @@
         justify-content: space-between;
         min-height: 100vh;
       }
+
       .title {
         font-size: clamp(2rem, 10vw, 2.8rem);
         max-width: 6ch;
       }
+
       .panel {
         width: 100%;
         max-width: 420px;
         padding: var(--space-4);
       }
+
       .tagline { font-size: var(--text-lg); }
       .btn { width: 100%; min-width: 0; }
     }
@@ -180,10 +209,42 @@
         <p class="copy">
           Get through all three questions to earn your place on the Daily Legends Board.
         </p>
-        <!-- Question 1 entry (existing flow) -->
-        <a class="btn" href="./question.html?round=1">Take the chair</a>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="thinkingCapBtn" type="button">Thinking Cap on?</button>
+          <a class="btn btn-secondary hidden" id="takeChairBtn" href="./question.html?round=1">Take the chair</a>
+        </div>
+
+        <div class="status" id="statusText"></div>
       </section>
     </main>
   </div>
+
+  <audio id="themeAudio" preload="auto" loop>
+    <source src="./assets/thepressertheme.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const thinkingCapBtn = document.getElementById('thinkingCapBtn');
+    const takeChairBtn = document.getElementById('takeChairBtn');
+    const statusText = document.getElementById('statusText');
+    const themeAudio = document.getElementById('themeAudio');
+
+    themeAudio.volume = 0.9;
+
+    thinkingCapBtn.addEventListener('click', async () => {
+      try {
+        themeAudio.currentTime = 0;
+        await themeAudio.play();
+        statusText.textContent = 'Theme music on. Step forward when you are ready.';
+      } catch (error) {
+        console.error('Theme music failed to start', error);
+        statusText.textContent = 'Music could not start on this device, but you can still continue.';
+      }
+
+      thinkingCapBtn.classList.add('hidden');
+      takeChairBtn.classList.remove('hidden');
+    });
+  </script>
 </body>
 </html>
