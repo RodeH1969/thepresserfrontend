@@ -159,24 +159,34 @@
       border: 1px solid var(--color-border);
     }
 
-    .status {
-      min-height: 1.5em;
-      font-size: var(--text-sm);
-      color: var(--color-text-muted);
-    }
-
     @media (max-width: 920px) {
-      .shell { grid-template-columns: 1fr; }
-      .panel { margin: 0 auto; }
-      .title { max-width: none; }
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        margin: 0 auto;
+      }
+
+      .title {
+        max-width: none;
+      }
     }
 
     @media (max-width: 640px) {
       .shell {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        display: block;
         min-height: 100vh;
+        padding: 1.25rem;
+        position: relative;
+      }
+
+      .brand {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.25rem;
+        z-index: 2;
+        padding: 0;
       }
 
       .title {
@@ -185,13 +195,38 @@
       }
 
       .panel {
-        width: 100%;
-        max-width: 420px;
-        padding: var(--space-4);
+        position: absolute;
+        right: 1rem;
+        bottom: 6.5rem;
+        width: min(350px, calc(100vw - 2rem));
+        margin: 0;
+        padding: 1.1rem;
+        gap: 0.9rem;
+        text-align: center;
       }
 
-      .tagline { font-size: var(--text-lg); }
-      .btn { width: 100%; min-width: 0; }
+      .tagline {
+        font-size: 1.05rem;
+        line-height: 1.1;
+        max-width: 12ch;
+      }
+
+      .copy {
+        font-size: 0.95rem;
+        line-height: 1.45;
+        max-width: 24ch;
+      }
+
+      .actions {
+        gap: 0.75rem;
+      }
+
+      .btn {
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -214,20 +249,17 @@
           <button class="btn btn-primary" id="thinkingCapBtn" type="button">Thinking Cap on?</button>
           <a class="btn btn-secondary hidden" id="takeChairBtn" href="./question.html?round=1">Take the chair</a>
         </div>
-
-        <div class="status" id="statusText"></div>
       </section>
     </main>
   </div>
 
   <audio id="themeAudio" preload="auto" loop>
-    <source src="./assets/thepressertheme.mp3" type="audio/mpeg">
+    <source src="./thepressertheme.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     const thinkingCapBtn = document.getElementById('thinkingCapBtn');
     const takeChairBtn = document.getElementById('takeChairBtn');
-    const statusText = document.getElementById('statusText');
     const themeAudio = document.getElementById('themeAudio');
 
     themeAudio.volume = 0.9;
@@ -236,10 +268,8 @@
       try {
         themeAudio.currentTime = 0;
         await themeAudio.play();
-        statusText.textContent = 'Theme music on. Step forward when you are ready.';
       } catch (error) {
         console.error('Theme music failed to start', error);
-        statusText.textContent = 'Music could not start on this device, but you can still continue.';
       }
 
       thinkingCapBtn.classList.add('hidden');
