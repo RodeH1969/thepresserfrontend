@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Presser - Submission received</title>
 
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+  //api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -36,8 +36,6 @@
       background: #05070b;
       color: var(--color-text);
     }
-
-    .hidden { display: none !important; }
 
     .app {
       min-height: 100vh;
@@ -82,30 +80,16 @@
       font-size: var(--text-xl);
       font-weight: 800;
       line-height: 1.08;
+      color: var(--color-text);
     }
 
     .copy {
       margin: 0 auto;
-      max-width: 38ch;
+      max-width: 42ch;
       font-size: var(--text-base);
       line-height: 1.65;
-      color: var(--color-text-muted);
-    }
-
-    .email-line {
-      margin: 0 auto;
-      padding: var(--space-3) var(--space-4);
-      border-radius: var(--radius-full);
-      border: 1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.05);
-      font-size: var(--text-sm);
       color: var(--color-text);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-2);
-      max-width: 100%;
-      word-break: break-word;
+      font-weight: 700;
     }
 
     .actions {
@@ -162,10 +146,6 @@
         width: 100%;
         min-width: 0;
       }
-
-      .email-line {
-        border-radius: 1rem;
-      }
     }
   </style>
 </head>
@@ -174,18 +154,16 @@
     <div class="bg"></div>
 
     <section class="panel">
-      <div class="eyebrow" id="eyebrow">Round complete</div>
-      <h1 class="title">Answer received</h1>
+      <div class="eyebrow" id="eyebrow">Question 1 submitted</div>
+      <h1 class="title" id="title">Question 1 Judgement</h1>
 
       <p class="copy" id="submittedCopy">
-        We have your answer. You will receive an email soon with your score and whether you have advanced to the next question.
+        Go to your email now to get your score and click on the link for a full critique by the judges of your performance.
       </p>
 
-      <div class="email-line hidden" id="emailLine"></div>
-
       <div class="actions">
-        <a class="btn btn-primary" id="returnHomeBtn" href="./index.html">Return home</a>
-        <a class="btn btn-secondary" href="./legends.html">View legends lounge</a>
+        <a class="btn btn-primary" id="returnHomeBtn" href="./index.html">Return Home</a>
+        <a class="btn btn-secondary" href="./legends.html">View Legends Lounge</a>
       </div>
     </section>
   </div>
@@ -193,31 +171,28 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const round = Number(params.get('round') || '1');
-    const email = params.get('email') || '';
     const submissionId = params.get('submission_id') || '';
 
     const eyebrow = document.getElementById('eyebrow');
+    const title = document.getElementById('title');
     const submittedCopy = document.getElementById('submittedCopy');
-    const emailLine = document.getElementById('emailLine');
     const returnHomeBtn = document.getElementById('returnHomeBtn');
 
     if (round === 1) {
       eyebrow.textContent = 'Question 1 submitted';
+      title.textContent = 'Question 1 Judgement';
       submittedCopy.textContent =
-        'We have your answer. You will receive an email soon with your score and whether you have advanced to Question 2.';
+        'Go to your email now to get your score and click on the link for a full critique by the judges of your performance.';
     } else if (round === 2) {
       eyebrow.textContent = 'Question 2 submitted';
+      title.textContent = 'Question 2 Judgement';
       submittedCopy.textContent =
-        'We have your answer. You will receive an email soon with your score and whether you have advanced to Question 3.';
+        'Go to your email now to get your score and click on the link for a full critique by the judges of your performance.';
     } else {
       eyebrow.textContent = 'Final question submitted';
+      title.textContent = 'Final Judgement';
       submittedCopy.textContent =
-        'We have your answer. You will receive an email soon with your final score and the result of your Presser run.';
-    }
-
-    if (email) {
-      emailLine.textContent = 'Result email: ' + email;
-      emailLine.classList.remove('hidden');
+        'Go to your email now to get your score and click on the link for a full critique by the judges of your performance.';
     }
 
     if (submissionId) {
