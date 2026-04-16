@@ -116,8 +116,10 @@
       font-size: var(--text-xl);
       font-weight: 700;
       line-height: 1.08;
-      max-width: 14ch;
+      max-width: none;
       margin: 0;
+      text-align: center;
+      white-space: nowrap;
     }
 
     .copy {
@@ -217,6 +219,10 @@
       .title {
         max-width: none;
       }
+
+      .tagline {
+        white-space: normal;
+      }
     }
 
     @media (max-width: 640px) {
@@ -282,7 +288,9 @@
       .tagline {
         font-size: 0.92rem;
         line-height: 1.08;
-        max-width: 12ch;
+        max-width: none;
+        text-align: center;
+        white-space: nowrap;
       }
 
       .copy {
@@ -323,6 +331,12 @@
         font-size: 0.92rem;
       }
     }
+
+    @media (max-width: 420px) {
+      .tagline {
+        font-size: 0.84rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -336,9 +350,9 @@
 
       <section class="panel">
         <div id="defaultCopy">
-          <p class="tagline">Have you got what it takes?</p>
+          <p class="tagline">Think you can handle The Presser?</p>
           <p class="copy">
-            Get through all three questions to earn your place in the Daily Legends Lounge.
+            3 questions, can you answer them?
           </p>
         </div>
 
@@ -353,7 +367,7 @@
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" id="thinkingCapBtn" type="button">Thinking Cap on?</button>
+          <button class="btn btn-primary" id="thinkingCapBtn" type="button">Bring it on?</button>
           <a class="btn btn-primary hidden" id="takeChairBtn" href="./question.html?round=1">Take the chair</a>
         </div>
       </section>
@@ -382,6 +396,9 @@
 
     let promptIndex = 0;
     let rotationTimer = null;
+    let audioContext = null;
+    let sourceNode = null;
+    let gainNode = null;
 
     function startPromptRotation() {
       if (!rotatingQuestion || rotationTimer) return;
@@ -397,15 +414,33 @@
       }, 2200);
     }
 
-    themeAudio.volume = 0.9;
-
-    thinkingCapBtn.addEventListener('click', async () => {
+    async function playThemeLouder() {
       try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          sourceNode = audioContext.createMediaElementSource(themeAudio);
+          gainNode = audioContext.createGain();
+
+          sourceNode.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+
+          gainNode.gain.value = 1.8;
+        }
+
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+
         themeAudio.currentTime = 0;
+        themeAudio.volume = 1.0;
         await themeAudio.play();
       } catch (error) {
         console.error('Theme music failed to start', error);
       }
+    }
+
+    thinkingCapBtn.addEventListener('click', async () => {
+      await playThemeLouder();
 
       defaultCopy.classList.add('hidden');
       challengeCopy.classList.remove('hidden');
