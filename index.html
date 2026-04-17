@@ -70,6 +70,53 @@
       );
     }
 
+    .corner-image {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 3;
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+      opacity: 0.92;
+      display: none;
+    }
+
+    .corner-image.is-visible {
+      display: block;
+    }
+
+    .tip-popup {
+      position: absolute;
+      top: 1rem;
+      right: 5.8rem;
+      z-index: 3;
+      max-width: min(320px, calc(100vw - 7.5rem));
+      padding: 0.8rem 0.95rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(8, 10, 14, 0.92);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      box-shadow: 0 14px 36px rgba(0,0,0,0.34);
+      display: none;
+    }
+
+    .tip-popup.is-visible {
+      display: block;
+    }
+
+    .tip-popup p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      font-weight: 700;
+      max-width: 28ch;
+    }
+
     .shell {
       position: relative;
       z-index: 1;
@@ -336,6 +383,28 @@
         min-height: 44px;
         font-size: 0.92rem;
       }
+
+      .corner-image {
+        top: 0.85rem;
+        right: 0.85rem;
+        width: 46px;
+        height: 46px;
+        border-radius: 0.6rem;
+      }
+
+      .tip-popup {
+        top: 0.85rem;
+        right: 4.2rem;
+        max-width: min(220px, calc(100vw - 5.5rem));
+        padding: 0.65rem 0.75rem;
+        border-radius: 0.8rem;
+      }
+
+      .tip-popup p {
+        font-size: 0.76rem;
+        line-height: 1.25;
+        max-width: 22ch;
+      }
     }
 
     @media (max-width: 420px) {
@@ -352,6 +421,19 @@
 <body>
   <div class="app">
     <div class="bg"></div>
+
+    <img
+      src="./assets/Fcq05.jpg"
+      alt="Breach Hack graphic"
+      class="corner-image"
+      id="cornerImage"
+      width="64"
+      height="64"
+    >
+
+    <div class="tip-popup hidden" id="tipPopup" role="dialog" aria-modal="false" aria-label="Scoring tip">
+      <p>To maximise your score, use as many descriptive words as possible that relate to the topic.</p>
+    </div>
 
     <main class="shell">
       <aside class="brand">
@@ -395,6 +477,8 @@
     const defaultCopy = document.getElementById('defaultCopy');
     const challengeCopy = document.getElementById('challengeCopy');
     const rotatingQuestion = document.getElementById('rotatingQuestion');
+    const cornerImage = document.getElementById('cornerImage');
+    const tipPopup = document.getElementById('tipPopup');
 
     const prompts = [
       "Why we’re paying so much to fill our car?",
@@ -460,6 +544,9 @@
 
       defaultCopy.classList.add('hidden');
       challengeCopy.classList.remove('hidden');
+      cornerImage.classList.add('is-visible');
+      tipPopup.classList.remove('hidden');
+      tipPopup.classList.add('is-visible');
       startPromptRotation();
 
       thinkingCapBtn.classList.add('hidden');
