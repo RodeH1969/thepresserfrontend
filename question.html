@@ -588,6 +588,10 @@
     </main>
   </div>
 
+  <audio id="judgingThemeAudio" preload="auto" loop>
+    <source src="./thepressertheme.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const SUPABASE_URL = 'https://uewabjbwqibawngglhij.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_GLBXIg_lipdkrDJpY7An4g_fhVQA8-c';
@@ -644,6 +648,7 @@
     const submitOverlay = document.getElementById('submitOverlay');
     const clockSecondHand = document.getElementById('clockSecondHand');
     const judgeSlides = Array.from(document.querySelectorAll('[data-judge-slide]'));
+    const judgingThemeAudio = document.getElementById('judgingThemeAudio');
 
     pageTitle.textContent = current.pageTitle;
     introCopy.textContent = current.intro;
@@ -651,6 +656,7 @@
     questionText.textContent = current.question;
     emailInput.value = presetEmail;
     timerEl.textContent = RECORDING_SECONDS + 's';
+    judgingThemeAudio.volume = 0.9;
 
     const promptAudio = new Audio();
     promptAudio.preload = 'auto';
@@ -741,11 +747,25 @@
     function showSubmitOverlay() {
       submitOverlay.classList.remove('hidden');
       startJudgeLoaderAnimation();
+
+      try {
+        judgingThemeAudio.currentTime = 0;
+        const playPromise = judgingThemeAudio.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+          playPromise.catch(error => {
+            console.error('Judging theme failed to play', error);
+          });
+        }
+      } catch (error) {
+        console.error('Judging theme failed to start', error);
+      }
     }
 
     function hideSubmitOverlay() {
       submitOverlay.classList.add('hidden');
       stopJudgeLoaderAnimation();
+      judgingThemeAudio.pause();
+      judgingThemeAudio.currentTime = 0;
     }
 
     function updateTimerState(seconds) {
@@ -988,6 +1008,9 @@
           throw new Error('Judge trigger failed.');
         }
 
+        judgingThemeAudio.pause();
+        judgingThemeAudio.currentTime = 0;
+
         const nextUrl = new URL('./submitted.html', window.location.href);
         nextUrl.searchParams.set('round', String(round));
         nextUrl.searchParams.set('email', email);
@@ -1008,6 +1031,8 @@
 
     window.addEventListener('beforeunload', () => {
       promptAudio.pause();
+      judgingThemeAudio.pause();
+      judgingThemeAudio.currentTime = 0;
       if (micStream) micStream.getTracks().forEach(track => track.stop());
       if (recordedUrl) URL.revokeObjectURL(recordedUrl);
       clearInterval(countdown);
